@@ -75,6 +75,7 @@ class Ui_Form(QWidget):
         self.logic.initState()
         self.logic.settingApp()
         self.Models = []
+        
         self.gridLayout = QGridLayout(self)
         self.gridLayout.setObjectName("gridLayout")
         self.Add = QPushButton(self)
@@ -105,6 +106,7 @@ class Ui_Form(QWidget):
         self.AddF.setObjectName("AddF")
         self.AddF.setStyleSheet(styleBtn)
         self.gridLayout.addWidget(self.AddF, 1, 1, 1, 1)
+       
         self.tabWidget = QTabWidget(self)
         self.tabWidget.setEnabled(True)
         self.tabWidget.setObjectName("tabWidget")
@@ -116,17 +118,18 @@ class Ui_Form(QWidget):
         self.Delete.clicked.connect(self.delModel)
         self.Apply.clicked.connect(self.logic.migrate)
         self.view = QWebEngineView(self)
-        sizeObject = QDesktopWidget().screenGeometry(-1)
-        print(" Screen size : "  + str(sizeObject.height()) + "x"  + str(sizeObject.width()))  
-        #self.view.setGeometry(QRect(240,150,sizeObject.width(),sizeObject.height()))
-        #self.gridLayout.addWidget(self.view, 2, 1, 1, 3)
-        self.view.setGeometry(QRect(240,150,sizeObject.width()*0.85,sizeObject.height()*0.65))
+        self.size= QDesktopWidget().screenGeometry(-1)
+        #print(" Screen size : "  + str(sizeObject.height()) + "x"  + str(sizeObject.width())) 768,1366
+        self.view.resize(self.size.height()*0.31,self.size.width()*0.10)
+        ##self.gridLayout.addWidget(self.view)
+        #self.view.setGeometry(QRect(240,150,sizeObject.width()*0.85,sizeObject.height()*0.65))
+        self.gridLayout.addWidget(self.view, 2, 1, 1, 2)
         self.run.clicked.connect(partial(self.logic.RunServer,self.view))
         self.Edit.clicked.connect(self.EditModel)
         self.Save.clicked.connect(self.logic.make)
         self.tabs = 0
         self.initState()
-        
+
         
     def initState(self):
         self.Edit.setEnabled(False)
@@ -141,6 +144,9 @@ class Ui_Form(QWidget):
                 self.addField(u)
             index += 1
 
+    def resizeEvent(self, event):
+        self.size= QDesktopWidget().screenGeometry(-1)
+        return super(Ui_Form, self).resizeEvent(event)
     def delModel(self):
         self.logic.delItem(self.tabWidget.currentWidget().objectName())
         self.tabWidget.removeTab(self.tabWidget.currentIndex())
@@ -168,17 +174,16 @@ class Ui_Form(QWidget):
         if ok:
             self.addField([str(text).replace(" ","_"), ""])
             self.logic.addField(self.tabWidget.currentWidget().objectName(), {
-                                str(text).replace(" ","_"): 'models.CharField(max_length=50,default="hjhj")'})
+                                str(text).replace(" ","_"): 'models.CharField(max_length=50,default="")'})
 
     def addModel(self, name):
         self.tab_2 = QWidget(self)
         self.tab_2.setObjectName(name)
         self.tabWidget.addTab(self.tab_2, name)
-        self.layoutWidget = QWidget(self.tab_2)
-        #self.layoutWidget.setGeometry(QRect(25, 0, 911, 511))
+        self.layoutWidget = QWidget(self.tab_2)    
         self.scrollarea = QScrollArea(self.tab_2)
-        self.scrollarea.setFixedWidth(230)
-        self.scrollarea.setFixedHeight(540)
+        self.scrollarea.setFixedWidth(self.size.width()*0.18)
+        self.scrollarea.setFixedHeight(self.size.height()*0.8)
         self.scrollarea.setWidgetResizable(True)
         self.scrollarea.setWidget(self.layoutWidget)
         self.gridLayout_4 = QGridLayout(self.layoutWidget)
@@ -189,6 +194,7 @@ class Ui_Form(QWidget):
         self.gridLayout_4.setObjectName("gridLayout_4")
         self.gridLayout_4.setHorizontalSpacing(3)
         self.gridLayout_4.setVerticalSpacing(3)
+        self.gridLayout.addLayout(self.gridLayout_4, 2, 1, 1, 2)
         self.Models.append({'item': self.gridLayout_4, 'col': 0, 'row': 0,'ccol':1})
         self.tabWidget.setCurrentWidget(self.tab_2)
         self.tabs += 1

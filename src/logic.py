@@ -2,14 +2,15 @@ from PyQt5.QtCore import QProcess, QUrl
 import socket
 import subprocess
 import sqlite3
-from subprocess import Popen
+from subprocess import Popen    
 
 class Logic:
     def __init__(self, path):
         self.path = path
-        self.project = '/'.join(path.split('\\')[:-1])
+        self.project = '/'.join(path.split('/')[:-1])
         self.pth = self.project
-        self.app = self.path.split("\\")[-1]
+        self.pythonVersion = "python3.8"
+        self.app = self.path.split("/")[-1]
         self.project = self.project + "/" + self.project.split('/')[-1]
         self.process = QProcess()
         self.prc = {"run":self.process,"make":self.process,"mig":self.process,"browser":self.process}
@@ -17,6 +18,7 @@ class Logic:
         self.ip_address = socket.gethostbyname(hostname)
 
     def initState(self):
+        
         try:
             a = open(f"{self.path}/serializers.py", "r")
         except:
@@ -130,7 +132,7 @@ class Logic:
             h[0] = h[0]+"),\n"+"]"
             h = self.listToStr(h)
             t = model.replace(h.strip(), self.listToStr(a).strip())
-            pth = self.path.split('\\')[-1]
+            pth = self.path.split('/')[-1]
             new = t.replace("from django.urls import path",
                             f"from rest_framework import routers\nfrom django.urls import include, path\nfrom {pth}.views import *\nrouter = routers.DefaultRouter()\n")
             model = open(f'{self.project}/urls.py', 'w').write(new)
@@ -253,7 +255,7 @@ class Logic:
         return result
 
     def settingApp(self):
-        model = open(f'{self.project}\settings.py', 'r').read()
+        model = open(f'{self.project}/settings.py', 'r').read()
         ip = model.find("ALLOWED_HOSTS")
         ipt = model[ip+len("ALLOWED_HOSTS")+2:model.find(']', ip)+1]
         nipt = eval(ipt)
@@ -261,12 +263,12 @@ class Logic:
         b = model.find("INSTALLED_APPS")
         t = model[b+len("INSTALLED_APPS")+2:model.find(']', b)+1]
         dt = eval(model[b+len("INSTALLED_APPS")+2:model.find(']', b)+1])
-        if dt.count(self.path.split('\\')[-1]) == 0:
-            dt.append(self.path.split('\\')[-1])
+        if dt.count(self.path.split('/')[-1]) == 0:
+            dt.append(self.path.split('/')[-1])
         if dt.count('rest_framework') == 0:
             dt.append('rest_framework')
         old = model.replace("ALLOWED_HOSTS ="+ipt,"ALLOWED_HOSTS = "+str(nipt))
-        model = open(f'{self.project}\settings.py', 'w')
+        model = open(f'{self.project}/settings.py', 'w')
         model.write(old.replace(t, str(dt)))
         model.close()
 
@@ -275,8 +277,8 @@ class Logic:
         #     shutil.rmtree(f'{self.path}\migrations')
         # except:
         #     pass
-        # commands = [f"python {self.pth}\manage.py makemigrations",
-        #             f"python {self.pth}\manage.py migrate"]
+        # commands = [f"python {self.pth}/manage.py makemigrations",
+        #             f"python {self.pth}/manage.py migrate"]
         # for com in commands:
         #     process = Popen(com, shell=False,
         #                     stdout=subprocess.PIPE, stdin=subprocess.PIPE)
@@ -303,14 +305,20 @@ class Logic:
         connection.close()
     def make(self):
         self.killAll()
-        print(self.project)
-        com = f'python "{self.pth}\manage.py" makemigrations {self.app}'
-        process = Popen(com, shell=False,
-                             stdout=subprocess.PIPE, stdin=subprocess.PIPE)
-        l, m = process.communicate(bytes("y","utf-8"))
-        print(l, m)
+        self.process = QProcess()
+        com = f"{self.pythonVersion} {self.pth}/manage.py makemigrations {self.app}"
+        self.process.start(com)
+        self.process.waitForReadyRead()
+        print(str(self.process.readAll(), 'utf-8'))
+        self.prc['mk'] = self.process
+        # #com = 'python3.8 /home/chahboun/testApiMaker/manage.py makemigrations api'
+        # com = f"{self.pythonVersion} {self.pth}/manage.py makemigrations {self.app}"
+        # process = Popen(com, shell=True,
+        #                      stdout=subprocess.PIPE, stdin=subprocess.PIPE)
+        # l, m = process.communicate(bytes("y","utf-8"))
+        # print(l, m)
         # self.process = QProcess()
-        # com = f'python "{self.pth}\manage.py" makemigrations mini'
+        # com = ff'{self.pythonVersion}"{self.pth}/manage.py" makemigrations mini'
         # self.process.start(com)
         # self.process.waitForStarted()
         # self.process.write(u'y'.encode('utf-8'))
@@ -321,7 +329,7 @@ class Logic:
     def migrate(self):
         self.killAll()
         self.process = QProcess()
-        com = f'python "{self.pth}\manage.py" migrate'
+        com = f'{self.pythonVersion} "{self.pth}/manage.py" migrate'
         self.process.start(com)
         self.process.waitForReadyRead()
         print(str(self.process.readAll(), 'utf-8'))
@@ -330,10 +338,10 @@ class Logic:
     def RunServer(self,wb):
         self.killAll()
         self.process = QProcess()
-        com = f'python "{self.pth}\manage.py" runserver 0.0.0.0:8000'
+        com = f'{self.pythonVersion} {self.pth}\manage.py runserver'
         self.process.start(com)
         self.process.waitForReadyRead()
         print(str(self.process.readAll(), 'utf-8'))
         self.prc['run'] = self.process
-        wb.setUrl(QUrl(f'http://{self.ip_address}:8000'))
+        wb.setUrl(QUrl(f'http://127.0.0.1:8000'))
         #webbrowser.open('http://{}:8000'.format(self.ip_address))
