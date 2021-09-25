@@ -49,7 +49,7 @@ class ApiMakerUi(QWidget):
                            "     image: url(icons/close.png)\n"
                            " }")
 
-        styleBtn = """QPushButton{\n
+        self.styleBtn = """QPushButton{\n
                                border:1px solid #323232;\n
                                background-color:#323232;\n
                                font: bold 12px \'Reboto\';\n
@@ -76,31 +76,31 @@ class ApiMakerUi(QWidget):
         self.gridLayout.setObjectName("gridLayout")
         self.Add = QPushButton(self)
         self.Add.setObjectName("Add")
-        self.Add.setStyleSheet(styleBtn)
+        self.Add.setStyleSheet(self.styleBtn)
         self.gridLayout.addWidget(self.Add, 0, 0, 1, 1)
         self.Save = QPushButton(self)
         self.Save.setObjectName("Save")
-        self.Save.setStyleSheet(styleBtn)
+        self.Save.setStyleSheet(self.styleBtn)
         self.gridLayout.addWidget(self.Save, 3, 1, 1, 1)
         self.run = QPushButton(self)
         self.run.setObjectName("run")
-        self.run.setStyleSheet(styleBtn)
+        self.run.setStyleSheet(self.styleBtn)
         self.gridLayout.addWidget(self.run, 3, 0, 1, 1)
         self.Edit = QPushButton(self)
         self.Edit.setObjectName("Edit")
-        self.Edit.setStyleSheet(styleBtn)
+        self.Edit.setStyleSheet(self.styleBtn)
         self.gridLayout.addWidget(self.Edit, 0, 1, 1, 1)
         self.Apply = QPushButton(self)
         self.Apply.setObjectName("Apply")
-        self.Apply.setStyleSheet(styleBtn)
+        self.Apply.setStyleSheet(self.styleBtn)
         self.gridLayout.addWidget(self.Apply, 3, 2, 1, 1)
         self.Delete = QPushButton(self)
         self.Delete.setObjectName("Delete")
-        self.Delete.setStyleSheet(styleBtn)
+        self.Delete.setStyleSheet(self.styleBtn)
         self.gridLayout.addWidget(self.Delete, 0, 2, 1, 1)
         self.AddF = QPushButton(self)
         self.AddF.setObjectName("AddF")
-        self.AddF.setStyleSheet(styleBtn)
+        self.AddF.setStyleSheet(self.styleBtn)
         self.gridLayout.addWidget(self.AddF, 1, 1, 1, 1)       
         self.tabWidget = QTabWidget(self)
         self.view = QWebEngineView(self)
@@ -214,6 +214,9 @@ class ApiMakerUi(QWidget):
             event.ignore()
     def startApp(self):
         self.dlg = QDialog()
+        self.dlg.setStyleSheet("QWidget{background-color: rgb(65, 65, 65);}\nQTabWidget::tab-bar {\n"
+                           "     background-color: #fff;\n"
+                           "}\n")
         pixmap = QPixmap("./icon.ico")
         self.verticalLayoutWidget = QWidget(self.dlg)
         self.verticalLayoutWidget.setGeometry(QRect(30, 20, 341, 261))
@@ -245,6 +248,9 @@ class ApiMakerUi(QWidget):
         self.new.clicked.connect(self.createNewProject)
         self.open.clicked.connect(self.openProject)
         self.exit.clicked.connect(self.dlg.close)
+        self.new.setStyleSheet(self.styleBtn)
+        self.open.setStyleSheet(self.styleBtn)
+        self.exit.setStyleSheet(self.styleBtn)
         self.dlg.setWindowTitle("API Maker")
         self.dlg.setWindowModality(Qt.ApplicationModal)
         self.dlg.exec_()
