@@ -4,7 +4,7 @@ from PyQt5.QtCore import QCoreApplication, QMetaObject, QRect, Qt
 from PyQt5.QtWebEngineWidgets import QWebEngineView
 from functools import partial
 import os
-from PyQt5.QtGui import QFont, QIcon,QPixmap
+from PyQt5.QtGui import QFont, QIcon,QPixmap,QMouseEvent
 from src.edit_field import EditField
 
 class ApiMakerUi(QWidget):
@@ -282,7 +282,7 @@ class ApiMakerUi(QWidget):
         self.verticalLayout_3.addWidget(self.appName)
         self.saveIn = QLabel(self.verticalLayoutWidget)
         self.saveIn.setObjectName("label_3")
-        self.verticalLayout_3.addWidget(self.saveIn)
+        self.verticalLayout_3.addWidget(self.saveIn)        
         self.pyVersion = QLabel(self.verticalLayoutWidget)
         self.pyVersion.setObjectName("label_5")
         self.verticalLayout_3.addWidget(self.pyVersion)
@@ -295,7 +295,8 @@ class ApiMakerUi(QWidget):
         self.apName = QLineEdit(self.verticalLayoutWidget)
         self.apName.setObjectName("lineEdit_3")
         self.verticalLayout_4.addWidget(self.apName)
-        self.saveI = QLineEdit(self.verticalLayoutWidget)
+        self.saveI = QPushButton(self.verticalLayoutWidget)
+        self.saveI.setText("Directory")
         self.saveI.setObjectName("lineEdit")
         self.verticalLayout_4.addWidget(self.saveI)
         self.comboBox = QComboBox(self.verticalLayoutWidget)
@@ -313,12 +314,13 @@ class ApiMakerUi(QWidget):
         self.create.setText("Create")
         self.verticalLayout.addWidget(self.create)
         self.create.clicked.connect(self.callCreateNewProject)
+        self.saveI.clicked.connect(self.getDir)        
         self.create.setStyleSheet(self.styleBtn)
         self.comboBox.setStyleSheet(self.styleBtn)
         self.newDialog.setWindowTitle("New Project | API Maker")
         self.newDialog.setWindowModality(Qt.ApplicationModal)
         self.newDialog.exec_()
-        
+
     def callCreateNewProject(self):
         if self.prjName.text() and self.apName.text() and self.saveI.text() and self.comboBox.currentText():
             self.newDialog.close()
@@ -327,34 +329,35 @@ class ApiMakerUi(QWidget):
             print(self.apName.text())
             print(self.saveI.text())
             print(self.comboBox.currentText())            
-            self.path = f"/mnt/42E23A0EE23A0727/{self.prjName.text()}/{self.apName.text()}"
+            self.path = f"{self.newDir}/{self.prjName.text()}/{self.apName.text()}"
             self.logic = Logic(self.path)
             self.project = '/'.join(self.path.split("\\")[:-1])
             self.project = self.project + "/" + self.project.split('/')[-1]
-            self.logic.createNewProject(self.prjName.text(),self.apName.text(),"/mnt/42E23A0EE23A0727")
+            self.logic.createNewProject(self.prjName.text(),self.apName.text(),self.newDir)
             self.logic.initState()
             self.logic.settingApp()
             self.initState()
 
     def openProject(self):
         self.dlg.close()
-        self.path = self.GetDir()
+        self.path = self.getDir()
         self.project = '/'.join(self.path.split("\\")[:-1])
         self.project = self.project + "/" + self.project.split('/')[-1]
         self.logic = Logic(self.path)
         self.logic.initState()
         self.logic.settingApp()
         self.initState()
+        self.newDir = ""
 
-    def GetDir(self):
+    def getDir(self,txt = None):
         options = QFileDialog.Options()
     # options |= QFileDialog.DontUseNativeDialog
         fileName = str(QFileDialog.getExistingDirectory(
             self, "Select Directory"))
         if fileName:
             if os.sep == '\\':
-                fileName = fileName.replace('/', '\\')
-
+                fileName = fileName.replace('/', '\\')   
+            self.newDir = fileName        
             return fileName
 
         else:
