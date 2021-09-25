@@ -2,13 +2,13 @@
 from PyQt5.QtWidgets import QApplication
 import sys
 
-from src.ui import Ui_Form
+from src.ui import ApiMakerUi
 
 def main():
 
     app = QApplication(sys.argv)
     app.setStyle('Fusion')
-    ex = Ui_Form()
+    ex = ApiMakerUi()
     ex.showMaximized()
     sys.exit(app.exec_())
 main()

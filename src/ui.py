@@ -1,12 +1,13 @@
-from PyQt5.QtWidgets import QComboBox, QFileDialog, QGridLayout, QHBoxLayout, QInputDialog, QLabel, QLayout, QMessageBox, QPushButton, QScrollArea, QTabWidget, QVBoxLayout, QWidget,QDesktopWidget
+from PyQt5.QtWidgets import QComboBox, QDialog, QFileDialog, QGridLayout, QHBoxLayout, QInputDialog, QLabel, QLayout, QMessageBox, QPushButton, QScrollArea, QTabWidget, QVBoxLayout, QWidget,QDesktopWidget
 from src.logic import Logic
 from PyQt5.QtCore import QCoreApplication, QMetaObject, QRect, Qt
 from PyQt5.QtWebEngineWidgets import QWebEngineView
 from functools import partial
 import os
-from PyQt5.QtGui import QFont, QIcon
+from PyQt5.QtGui import QFont, QIcon,QPixmap
 from src.edit_field import EditField
-class Ui_Form(QWidget):
+
+class ApiMakerUi(QWidget):
     def __init__(self, parent=None, flags=Qt.WindowFlags()):
         super().__init__(parent=parent, flags=flags)
         self.setObjectName("self")
@@ -68,12 +69,7 @@ class Ui_Form(QWidget):
                                color: white;\n
                             }\n
                             """
-        self.path = self.GetDir()
-        self.project = '/'.join(self.path.split("\\")[:-1])
-        self.project = self.project + "/" + self.project.split('/')[-1]
-        self.logic = Logic(self.path)
-        self.logic.initState()
-        self.logic.settingApp()
+        self.startApp()
         self.Models = []
         
         self.gridLayout = QGridLayout(self)
@@ -119,9 +115,9 @@ class Ui_Form(QWidget):
         self.Delete.clicked.connect(self.delModel)
         self.Apply.clicked.connect(self.logic.migrate)
        
-        self.size= QDesktopWidget().screenGeometry(-1)
+        self.sizeScreen = QDesktopWidget().screenGeometry(-1)
         #print(" Screen size : "  + str(sizeObject.height()) + "x"  + str(sizeObject.width())) 768,1366
-        #self.view.resize(self.size.height()*0.31,self.size.width()*0.10)
+        #self.view.resize(self.sizeScreen.height()*0.31,self.sizeScreen.width()*0.10)
         ##self.gridLayout.addWidget(self.view)
         #self.view.setGeometry(QRect(240,150,sizeObject.width()*0.85,sizeObject.height()*0.65))
         #self.gridLayout.addWidget(self.view, 2, 1, 1, 3)
@@ -146,8 +142,8 @@ class Ui_Form(QWidget):
             index += 1
 
     def resizeEvent(self, event):
-        self.size= QDesktopWidget().screenGeometry(-1)
-        return super(Ui_Form, self).resizeEvent(event)
+        self.sizeScreen= QDesktopWidget().screenGeometry(-1)
+        return super(ApiMakerUi, self).resizeEvent(event)
     def delModel(self):
         self.logic.delItem(self.tabWidget.currentWidget().objectName())
         self.tabWidget.removeTab(self.tabWidget.currentIndex())
@@ -183,8 +179,8 @@ class Ui_Form(QWidget):
         self.tabWidget.addTab(self.tab_2, name)       
         self.layoutWidget = QWidget(self.tab_2)    
         self.scrollarea = QScrollArea(self.tab_2)
-        self.scrollarea.setFixedWidth(self.size.width()*0.18)
-        self.scrollarea.setFixedHeight(self.size.height()*0.8)
+        self.scrollarea.setFixedWidth(self.sizeScreen.width()*0.18)
+        self.scrollarea.setFixedHeight(self.sizeScreen.height()*0.8)
         self.scrollarea.setWidgetResizable(True)
         self.scrollarea.setWidget(self.layoutWidget)
         self.gridLayout_4 = QGridLayout(self.layoutWidget)
@@ -216,6 +212,54 @@ class Ui_Form(QWidget):
             event.accept()
         else:
             event.ignore()
+    def startApp(self):
+        self.dlg = QDialog()
+        pixmap = QPixmap("./icon.ico")
+        self.verticalLayoutWidget = QWidget(self.dlg)
+        self.verticalLayoutWidget.setGeometry(QRect(30, 20, 341, 261))
+        self.verticalLayoutWidget.setObjectName("verticalLayoutWidget")
+        self.verticalLayout = QVBoxLayout(self.verticalLayoutWidget)
+        self.verticalLayout.setContentsMargins(0, 0, 0, 0)
+        self.verticalLayout.setObjectName("verticalLayout")
+        self.icon = QLabel(self.verticalLayoutWidget)
+        self.icon.setObjectName("icon")
+        self.icon.resize(200,200)
+        self.icon.move(10,100)
+        self.icon.setPixmap(pixmap.scaled(self.icon.size()))
+        self.verticalLayout.addWidget(self.icon,alignment=Qt.AlignmentFlag.AlignCenter)
+        self.horizontalLayout = QHBoxLayout()
+        self.horizontalLayout.setObjectName("horizontalLayout")
+        self.new = QPushButton(self.verticalLayoutWidget)
+        self.new.setObjectName("new")
+        self.horizontalLayout.addWidget(self.new)
+        self.open = QPushButton(self.verticalLayoutWidget)
+        self.open.setObjectName("open")
+        self.horizontalLayout.addWidget(self.open)
+        self.exit = QPushButton(self.verticalLayoutWidget)
+        self.exit.setObjectName("exit")
+        self.horizontalLayout.addWidget(self.exit)
+        self.verticalLayout.addLayout(self.horizontalLayout)
+        self.new.setText("New")
+        self.open.setText("open")
+        self.exit.setText("exit")
+        self.new.clicked.connect(self.createNewProject)
+        self.open.clicked.connect(self.openProject)
+        self.exit.clicked.connect(self.dlg.close)
+        self.dlg.setWindowTitle("API Maker")
+        self.dlg.setWindowModality(Qt.ApplicationModal)
+        self.dlg.exec_()
+    def createNewProject(self):
+        #TODO: GUI for create new project
+        pass
+    def openProject(self):
+        self.dlg.close()
+        self.path = self.GetDir()
+        self.project = '/'.join(self.path.split("\\")[:-1])
+        self.project = self.project + "/" + self.project.split('/')[-1]
+        self.logic = Logic(self.path)
+        self.logic.initState()
+        self.logic.settingApp()
+
     def GetDir(self):
         options = QFileDialog.Options()
     # options |= QFileDialog.DontUseNativeDialog
