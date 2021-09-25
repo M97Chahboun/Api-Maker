@@ -1,5 +1,7 @@
+from os import popen
 import socket
 import sqlite3
+import subprocess
 from PyQt5.QtCore import QProcess,QUrl,QThread
 from threading import Thread
 class Logic:
@@ -11,7 +13,7 @@ class Logic:
         self.app = self.path.split("/")[-1]
         self.project = self.project + "/" + self.project.split('/')[-1]
         #self.process = QProcess()
-        self.prc = {"run":QProcess(),"make":QProcess(),"mig":QProcess()}
+        self.prc = {"run":QProcess(),"make":QProcess(),"mig":QProcess(),"new":QProcess()}
         hostname = socket.gethostname()
         #self.ip_address = socket.gethostbyname(hostname)
         self.ip_address = "127.0.0.1"
@@ -38,7 +40,17 @@ class Logic:
         for i in mylist:
             result += i+'\n'
         return result
-
+    def createNewProject(self,project,app,path):
+        com = f"cd {path} && django-admin startproject {project} && cd {path}/{project} && {self.pythonVersion} manage.py startapp {app}"
+        process = subprocess.Popen(com, shell=True,
+                              stdout=subprocess.PIPE, stdin=subprocess.PIPE)
+        l, m = process.communicate(bytes("y","utf-8"))
+        print(l, m)
+        # self.prc["new"].start(com)
+        # self.prc["new"].waitForStarted()
+        # self.prc["new"].waitForReadyRead()
+        # print(str(self.prc["new"].readAll(), 'utf-8'))
+        self.prc["new"].write(u'{}'.format(com).encode('utf-8'))
     def delItem(self, cl):
         self.delModel(cl, f"{self.path}/models.py")
         self.delModel(cl, f"{self.path}/views.py")

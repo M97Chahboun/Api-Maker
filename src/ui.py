@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QComboBox, QDialog, QFileDialog, QGridLayout, QHBoxLayout, QInputDialog, QLabel, QLayout, QMessageBox, QPushButton, QScrollArea, QTabWidget, QVBoxLayout, QWidget,QDesktopWidget
+from PyQt5.QtWidgets import QComboBox, QDialog, QFileDialog, QGridLayout, QHBoxLayout, QInputDialog, QLabel, QLayout, QMessageBox, QPushButton, QScrollArea, QTabWidget, QVBoxLayout, QWidget,QDesktopWidget,QLineEdit
 from src.logic import Logic
 from PyQt5.QtCore import QCoreApplication, QMetaObject, QRect, Qt
 from PyQt5.QtWebEngineWidgets import QWebEngineView
@@ -125,7 +125,7 @@ class ApiMakerUi(QWidget):
         self.Edit.clicked.connect(self.EditModel)
         self.Save.clicked.connect(self.logic.make)
         self.tabs = 0
-        self.initState()
+        
 
         
     def initState(self):
@@ -254,9 +254,88 @@ class ApiMakerUi(QWidget):
         self.dlg.setWindowTitle("API Maker")
         self.dlg.setWindowModality(Qt.ApplicationModal)
         self.dlg.exec_()
+
     def createNewProject(self):
-        #TODO: GUI for create new project
-        pass
+        self.newDialog = QDialog()
+        self.verticalLayoutWidget = QWidget(self.newDialog)
+        self.newDialog.setStyleSheet("QWidget{background-color: rgb(65, 65, 65);}\nQTabWidget::tab-bar {\n"
+                           "     background-color: #fff;\n"
+                           "}\n")
+        self.verticalLayoutWidget.setGeometry(QRect(20, 20, 361, 261))
+        self.verticalLayoutWidget.setObjectName("verticalLayoutWidget")
+        self.verticalLayout = QVBoxLayout(self.verticalLayoutWidget)
+        self.verticalLayout.setContentsMargins(0, 0, 0, 0)
+        self.verticalLayout.setObjectName("verticalLayout")
+        self.newProject = QLabel(self.verticalLayoutWidget)
+        self.newProject.setAlignment(Qt.AlignCenter)
+        self.newProject.setObjectName("label")
+        self.verticalLayout.addWidget(self.newProject)
+        self.horizontalLayout = QHBoxLayout()
+        self.horizontalLayout.setObjectName("horizontalLayout")
+        self.verticalLayout_3 = QVBoxLayout()
+        self.verticalLayout_3.setObjectName("verticalLayout_3")
+        self.projectName = QLabel(self.verticalLayoutWidget)
+        self.projectName.setObjectName("label_2")
+        self.verticalLayout_3.addWidget(self.projectName)
+        self.appName = QLabel(self.verticalLayoutWidget)
+        self.appName.setObjectName("label_4")
+        self.verticalLayout_3.addWidget(self.appName)
+        self.saveIn = QLabel(self.verticalLayoutWidget)
+        self.saveIn.setObjectName("label_3")
+        self.verticalLayout_3.addWidget(self.saveIn)
+        self.pyVersion = QLabel(self.verticalLayoutWidget)
+        self.pyVersion.setObjectName("label_5")
+        self.verticalLayout_3.addWidget(self.pyVersion)
+        self.horizontalLayout.addLayout(self.verticalLayout_3)
+        self.verticalLayout_4 = QVBoxLayout()
+        self.verticalLayout_4.setObjectName("verticalLayout_4")
+        self.prjName = QLineEdit(self.verticalLayoutWidget)
+        self.prjName.setObjectName("lineEdit_2")
+        self.verticalLayout_4.addWidget(self.prjName)
+        self.apName = QLineEdit(self.verticalLayoutWidget)
+        self.apName.setObjectName("lineEdit_3")
+        self.verticalLayout_4.addWidget(self.apName)
+        self.saveI = QLineEdit(self.verticalLayoutWidget)
+        self.saveI.setObjectName("lineEdit")
+        self.verticalLayout_4.addWidget(self.saveI)
+        self.comboBox = QComboBox(self.verticalLayoutWidget)
+        self.comboBox.setObjectName("comboBox")
+        self.comboBox.addItems(["python 3.8","python 3.9"])
+        self.verticalLayout_4.addWidget(self.comboBox)
+        self.horizontalLayout.addLayout(self.verticalLayout_4)
+        self.verticalLayout.addLayout(self.horizontalLayout)
+        self.newProject.setText("New Project:")
+        self.projectName.setText("Project name:")
+        self.appName.setText("App name:")
+        self.saveIn.setText("Save in:")
+        self.pyVersion.setText("Python version:")
+        self.create = QPushButton(self.verticalLayoutWidget)
+        self.create.setText("Create")
+        self.verticalLayout.addWidget(self.create)
+        self.create.clicked.connect(self.callCreateNewProject)
+        self.create.setStyleSheet(self.styleBtn)
+        self.comboBox.setStyleSheet(self.styleBtn)
+        self.newDialog.setWindowTitle("New Project | API Maker")
+        self.newDialog.setWindowModality(Qt.ApplicationModal)
+        self.newDialog.exec_()
+        
+    def callCreateNewProject(self):
+        if self.prjName.text() and self.apName.text() and self.saveI.text() and self.comboBox.currentText():
+            self.newDialog.close()
+            self.dlg.close()
+            print(self.prjName.text())
+            print(self.apName.text())
+            print(self.saveI.text())
+            print(self.comboBox.currentText())            
+            self.path = f"/mnt/42E23A0EE23A0727/{self.prjName.text()}/{self.apName.text()}"
+            self.logic = Logic(self.path)
+            self.project = '/'.join(self.path.split("\\")[:-1])
+            self.project = self.project + "/" + self.project.split('/')[-1]
+            self.logic.createNewProject(self.prjName.text(),self.apName.text(),"/mnt/42E23A0EE23A0727")
+            self.logic.initState()
+            self.logic.settingApp()
+            self.initState()
+
     def openProject(self):
         self.dlg.close()
         self.path = self.GetDir()
@@ -265,6 +344,7 @@ class ApiMakerUi(QWidget):
         self.logic = Logic(self.path)
         self.logic.initState()
         self.logic.settingApp()
+        self.initState()
 
     def GetDir(self):
         options = QFileDialog.Options()
