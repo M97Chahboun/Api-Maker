@@ -1,9 +1,7 @@
-from PyQt5.QtCore import QProcess, QUrl
 import socket
-import subprocess
 import sqlite3
-from subprocess import Popen    
-
+from PyQt5.QtCore import QProcess,QUrl,QThread
+from threading import Thread
 class Logic:
     def __init__(self, path):
         self.path = path
@@ -12,10 +10,11 @@ class Logic:
         self.pythonVersion = "python3.8"
         self.app = self.path.split("/")[-1]
         self.project = self.project + "/" + self.project.split('/')[-1]
-        self.process = QProcess()
-        self.prc = {"run":self.process,"make":self.process,"mig":self.process,"browser":self.process}
+        #self.process = QProcess()
+        self.prc = {"run":QProcess(),"make":QProcess(),"mig":QProcess()}
         hostname = socket.gethostname()
-        self.ip_address = socket.gethostbyname(hostname)
+        #self.ip_address = socket.gethostbyname(hostname)
+        self.ip_address = "127.0.0.1"
 
     def initState(self):
         
@@ -303,20 +302,32 @@ class Logic:
         deleteSQLStatememnt = f'DELETE from django_migrations where app="{self.app}"'
         cursor.execute(deleteSQLStatememnt)
         connection.close()
-    def make(self):
-        self.killAll()
-        self.process = QProcess()
-        com = f"{self.pythonVersion} {self.pth}/manage.py makemigrations {self.app}"
-        self.process.start(com)
-        self.process.waitForReadyRead()
-        print(str(self.process.readAll(), 'utf-8'))
-        self.prc['mk'] = self.process
-        # #com = 'python3.8 /home/chahboun/testApiMaker/manage.py makemigrations api'
-        # com = f"{self.pythonVersion} {self.pth}/manage.py makemigrations {self.app}"
+    def runCmd(self,com,process):
+        #self.killAll()
+        self.prc[process].start(com)
+        if("runserver"not in com):
+            self.prc[process].waitForStarted()
+            self.prc[process].write(u'y'.encode('utf-8'))
+            self.prc[process].waitForReadyRead()
+            print(str(self.prc[process].readAll(), 'utf-8'))
+        #self.prc['make'] = self.process
+        #com = f"{self.pythonVersion} {self.pth}/manage.py makemigrations {self.app}"
         # process = Popen(com, shell=True,
         #                      stdout=subprocess.PIPE, stdin=subprocess.PIPE)
         # l, m = process.communicate(bytes("y","utf-8"))
         # print(l, m)
+    def make(self):
+        
+        # self.process = QProcess()
+        # com = f"{self.pythonVersion} {self.pth}/manage.py makemigrations {self.app}"
+        # print(com)
+        # self.process.start(com)
+        # self.process.waitForReadyRead()
+        # print(str(self.process.readAll(), 'utf-8'))
+        # self.prc['mk'] = self.process
+        #com = 'python3.8 /home/chahboun/testApiMaker/manage.py makemigrations api'
+        com = f"{self.pythonVersion} {self.pth}/manage.py makemigrations {self.app}"
+        self.runCmd(com,"make")
         # self.process = QProcess()
         # com = ff'{self.pythonVersion}"{self.pth}/manage.py" makemigrations mini'
         # self.process.start(com)
@@ -327,21 +338,24 @@ class Logic:
         # self.prc['make'] = self.process
 
     def migrate(self):
-        self.killAll()
-        self.process = QProcess()
         com = f'{self.pythonVersion} "{self.pth}/manage.py" migrate'
-        self.process.start(com)
-        self.process.waitForReadyRead()
-        print(str(self.process.readAll(), 'utf-8'))
-        self.prc['mig'] = self.process
+        self.runCmd(com,"mig")
+        #wb.setUrl(QUrl(f'http://127.0.0.1:8000'))
+        #self.killAll()
+        # self.process = QProcess()
+        # com = f'{self.pythonVersion} "{self.pth}/manage.py" migrate'
+        # self.process.start(com)
+        # self.process.waitForReadyRead()
+        # print(str(self.process.readAll(), 'utf-8'))
+        # self.prc['mig'] = self.process
         
-    def RunServer(self,wb):
-        self.killAll()
-        self.process = QProcess()
-        com = f'{self.pythonVersion} {self.pth}\manage.py runserver'
-        self.process.start(com)
-        self.process.waitForReadyRead()
-        print(str(self.process.readAll(), 'utf-8'))
-        self.prc['run'] = self.process
-        wb.setUrl(QUrl(f'http://127.0.0.1:8000'))
+    def runServer(self,wb):
+        #self.killAll()
+        #self.process = QProcess()
+        com = f'{self.pythonVersion} {self.pth}/manage.py runserver'
+        self.runCmd(com,"run")
+        # self.process.start(com)
+        # self.process.waitForReadyRead()
+        # print(str(self.process.readAll(), 'utf-8'))              
+        wb.setUrl(QUrl(f'http://{self.ip_address}:8000'))
         #webbrowser.open('http://{}:8000'.format(self.ip_address))
