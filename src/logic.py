@@ -18,8 +18,7 @@ class Logic:
         #self.ip_address = socket.gethostbyname(hostname)
         self.ip_address = "127.0.0.1"
 
-    def initState(self):
-        
+    def initState(self):        
         try:
             a = open(f"{self.path}/serializers.py", "r")
         except:
@@ -41,6 +40,7 @@ class Logic:
             result += i+'\n'
         return result
     def createNewProject(self,project,app,path):
+        print(path)
         com = f"cd {path} && django-admin startproject {project} && cd {path}/{project} && {self.pythonVersion} manage.py startapp {app}"
         process = subprocess.Popen(com, shell=True,
                               stdout=subprocess.PIPE, stdin=subprocess.PIPE)

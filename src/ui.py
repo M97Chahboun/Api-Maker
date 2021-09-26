@@ -69,9 +69,15 @@ class ApiMakerUi(QWidget):
                                color: white;\n
                             }\n
                             """
-        self.startApp()
-        self.Models = []
         
+        self.startApp()
+        
+        
+        
+
+        
+    def initState(self):
+        self.Models = [] 
         self.gridLayout = QGridLayout(self)
         self.gridLayout.setObjectName("gridLayout")
         self.Add = QPushButton(self)
@@ -107,14 +113,13 @@ class ApiMakerUi(QWidget):
         self.tabWidget.setEnabled(True)
         self.tabWidget.setObjectName("tabWidget")
         self.gridLayout.addWidget(self.tabWidget, 2, 0, 1, 3)
-        self.gridLayout.addWidget(self.view, 2, 1, 1, 3)
+        self.gridLayout.addWidget(self.view, 2, 1, 1, 1)
         self.retranslateUi()
         QMetaObject.connectSlotsByName(self)
         self.AddF.clicked.connect(self.showField)
         self.Add.clicked.connect(self.showModel)
-        self.Delete.clicked.connect(self.delModel)
-        self.Apply.clicked.connect(self.logic.migrate)
-       
+        self.Delete.clicked.connect(self.delModel)        
+        self.Apply.clicked.connect(self.logic.migrate)       
         self.sizeScreen = QDesktopWidget().screenGeometry(-1)
         #print(" Screen size : "  + str(sizeObject.height()) + "x"  + str(sizeObject.width())) 768,1366
         #self.view.resize(self.sizeScreen.height()*0.31,self.sizeScreen.width()*0.10)
@@ -125,10 +130,6 @@ class ApiMakerUi(QWidget):
         self.Edit.clicked.connect(self.EditModel)
         self.Save.clicked.connect(self.logic.make)
         self.tabs = 0
-        
-
-        
-    def initState(self):
         self.Edit.setEnabled(False)
         self.Delete.setEnabled(False)
         self.AddF.setEnabled(False)
@@ -251,7 +252,7 @@ class ApiMakerUi(QWidget):
         self.new.setStyleSheet(self.styleBtn)
         self.open.setStyleSheet(self.styleBtn)
         self.exit.setStyleSheet(self.styleBtn)
-        self.dlg.setWindowTitle("API Maker")
+        self.dlg.setWindowTitle("StartApp | API Maker")
         self.dlg.setWindowModality(Qt.ApplicationModal)
         self.dlg.exec_()
 
@@ -347,6 +348,7 @@ class ApiMakerUi(QWidget):
         self.logic.initState()
         self.logic.settingApp()
         self.initState()
+        
         self.newDir = ""
 
     def getDir(self,txt = None):
