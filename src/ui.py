@@ -71,11 +71,7 @@ class ApiMakerUi(QWidget):
                             """
         
         self.startApp()
-        
-        
-        
-
-        
+    
     def initState(self):
         self.Models = [] 
         self.gridLayout = QGridLayout(self)

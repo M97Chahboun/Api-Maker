@@ -1,9 +1,10 @@
-from os import popen
+import os
 import socket
 import sqlite3
 import subprocess
-from PyQt5.QtCore import QProcess,QUrl,QThread
-from threading import Thread
+import signal
+from PyQt5.QtCore import QProcess,QUrl
+
 class Logic:
     def __init__(self, path):
         self.path = path
@@ -307,6 +308,9 @@ class Logic:
     def killRun(self):
         self.prc['run'].kill()
         self.prc['run'].terminate()
+        ok, pid = self.prc['run'].startDetached()
+       
+        os.kill(pid, signal.SIGTERM)
         del self.prc['run']
     def delMig(self):
         connection = sqlite3.connect(f"{self.pth}\db.sqlite3")
