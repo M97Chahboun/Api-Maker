@@ -11,8 +11,7 @@ class ApiMakerUi(QWidget):
     def __init__(self, parent=None, flags=Qt.WindowFlags()):
         super().__init__(parent=parent, flags=flags)
         self.setObjectName("self")
-        self.resize(944, 654)
-        
+        self.resize(944, 654)        
         self.setWindowIcon(QIcon('icon.ico'))
         self.setStyleSheet("QWidget{background-color: rgb(65, 65, 65);}\nQTabWidget::tab-bar {\n"
                            "     background-color: #fff;\n"
@@ -244,7 +243,7 @@ class ApiMakerUi(QWidget):
         self.exit.setText("exit")
         self.new.clicked.connect(self.createNewProject)
         self.open.clicked.connect(self.openProject)
-        self.exit.clicked.connect(self.dlg.close)
+        self.exit.clicked.connect(exit)
         self.new.setStyleSheet(self.styleBtn)
         self.open.setStyleSheet(self.styleBtn)
         self.exit.setStyleSheet(self.styleBtn)
@@ -321,11 +320,7 @@ class ApiMakerUi(QWidget):
     def callCreateNewProject(self):
         if self.prjName.text() and self.apName.text() and self.saveI.text() and self.comboBox.currentText():
             self.newDialog.close()
-            self.dlg.close()
-            print(self.prjName.text())
-            print(self.apName.text())
-            print(self.saveI.text())
-            print(self.comboBox.currentText())            
+            self.dlg.close()            
             self.path = f"{self.newDir}/{self.prjName.text()}/{self.apName.text()}"
             self.logic = Logic(self.path)
             self.project = '/'.join(self.path.split("\\")[:-1])
