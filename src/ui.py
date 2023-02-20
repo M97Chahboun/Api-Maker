@@ -19,7 +19,7 @@ class ApiMakerUi(QWidget):
                            " QTabBar::tab {\n"
                            "    background-color:#323232;\n"
                            "    border-color: rgb(50, 50, 50);\n"
-                           "    font: bold 12px \'Reboto\';\n"
+                           "    font: bold 12px \'Arial\';\n"
                            "    color: white;\n"
                            "    height:40px;\n"
                            "    width:170px;\n"
@@ -51,7 +51,7 @@ class ApiMakerUi(QWidget):
         self.styleBtn = """QPushButton{\n
                                border:1px solid #323232;\n
                                background-color:#323232;\n
-                               font: bold 12px \'Reboto\';\n
+                               font: bold 12px \'Arial\';\n
                                color: white;\n
                                height:40px;\n
                                width:170px;\n
@@ -175,8 +175,8 @@ class ApiMakerUi(QWidget):
         self.tabWidget.addTab(self.tab_2, name)       
         self.layoutWidget = QWidget(self.tab_2)    
         self.scrollarea = QScrollArea(self.tab_2)
-        self.scrollarea.setFixedWidth(self.sizeScreen.width()*0.18)
-        self.scrollarea.setFixedHeight(self.sizeScreen.height()*0.8)
+        self.scrollarea.setFixedWidth(int(self.sizeScreen.width()*0.18))
+        self.scrollarea.setFixedHeight(int(self.sizeScreen.height()*0.8))
         self.scrollarea.setWidgetResizable(True)
         self.scrollarea.setWidget(self.layoutWidget)
         self.gridLayout_4 = QGridLayout(self.layoutWidget)
@@ -393,10 +393,10 @@ class Field(QWidget):
         self.verticalLayout = QVBoxLayout(self)
         self.Model = QLabel(self)
         self.Model.setText(name)
-        self.Model.setFont(QFont('Reboto', 20, QFont.Bold))
+        self.Model.setFont(QFont('Arial', 20, QFont.Bold))
         self.Model.setAlignment(Qt.AlignCenter | Qt.AlignCenter)
         self.verticalLayout.addWidget(self.Model)
-        font = QFont('Reboto',12, QFont.Bold)
+        font = QFont('Arial',12, QFont.Bold)
         self.Types = QComboBox(self)
         self.Types.setFont(font)
         self.Types.setObjectName("Types")
