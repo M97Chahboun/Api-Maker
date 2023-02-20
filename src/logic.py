@@ -10,7 +10,7 @@ class Logic:
         self.path = path
         self.project = '/'.join(path.split('/')[:-1])
         self.pth = self.project
-        self.pythonVersion = "python3.8"
+        self.pythonVersion = "python3"
         self.app = self.path.split("/")[-1]
         self.project = self.project + "/" + self.project.split('/')[-1]
         #self.process = QProcess()
