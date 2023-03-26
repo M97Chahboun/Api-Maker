@@ -108,7 +108,7 @@ class ApiMakerUi(QWidget):
         self.tabWidget.setEnabled(True)
         self.tabWidget.setObjectName("tabWidget")
         self.gridLayout.addWidget(self.tabWidget, 2, 0, 1, 3)
-        self.gridLayout.addWidget(self.view, 2, 1, 1, 1)
+        self.gridLayout.addWidget(self.view, 2, 2, 1, 1)
         self.retranslateUi()
         QMetaObject.connectSlotsByName(self)
         self.AddF.clicked.connect(self.showField)
